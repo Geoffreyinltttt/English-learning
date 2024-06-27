@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教研帶你學英文</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        #inputText {
+            width: 80%;
+            height: 100px;
+            margin-bottom: 10px;
+        }
+        #output {
+            width: 80%;
+            min-height: 50px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-top: 10px;
+            line-height: 1.5;
+        }
+        .highlight {
+            background-color: yellow;
+            box-shadow: 0 0 5px yellow;
+        }
+        #speedControl {
+            width: 80%;
+            margin: 10px 0;
+        }
+        #speedValue {
+            margin-left: 10px;
+        }
+        #pronunciationGuide {
+            width: 80%;
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            display: none;
+            text-align: center;
+        }
+        #mouthAnimation {
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+        }
+        #instruction {
+            margin-top: 10px;
+            font-style: italic;
+            color: #666;
+        }
+        #syllables {
+            font-size: 24px;
+            margin: 20px 0;
+        }
+        .syllable {
+            cursor: pointer;
+            padding: 5px;
+            margin: 0 5px;
+            border-radius: 5px;
+        }
+        .syllable:hover {
+            background-color: #f0f0f0;
+        }
+        .syllable.active {
+            background-color: #ffff00;
+        }
+        #ipa {
+            font-size: 18px;
+            margin: 10px 0;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <h1>教研帶你學英文</h1>
+    <textarea id="inputText" placeholder="請輸入要朗讀的文字"></textarea>
+    <div>
+        <label for="speedControl">語速控制：</label>
+        <input type="range" id="speedControl" min="0.5" max="2" step="0.1" value="1">
+        <span id="speedValue">1x</span>
+    </div>
+    <button onclick="speak()">開始朗讀</button>
+    <div id="output"></div>
+    <div id="instruction">點選單字即可聽發音、查看音節拆解及國際音標</div>
+    <div id="pronunciationGuide">
+        <h3>發音教學</h3>
+        <p>單詞：<span id="selectedWord"></span></p>
+        <div id="syllables"></div>
+        <div id="ipa"></div>
+        <button onclick="speakSyllables()">朗讀音節</button>
+        <div id="mouthAnimation"></div>
+    </div>
+
+    <script>
+        let synth = window.speechSynthesis;
+        let utterance;
+        let wordArray;
+        let currentIndex = 0;
+        let speedControl = document.getElementById('speedControl');
+        let speedValue = document.getElementById('speedValue');
+        let output = document.getElementById('output');
+        let pronunciationGuide = document.getElementById('pronunciationGuide');
+        let currentWord = '';
+        let currentSyllables = [];
+
+        // 更新的單詞信息，包含詳細音節拆解和國際音標
+        const wordInfo = {
+            'hello': {
+                syllables: ['hel', 'lo'],
+                ipa: '[həˈləʊ]'
+            },
+            'world': {
+                syllables: ['world'],
+                ipa: '[wɜːld]'
+            },
+            'computer': {
+                syllables: ['com', 'pu', 'ter'],
+                ipa: '[kəmˈpjuːtə(r)]'
+            },
+            'language': {
+                syllables: ['lan', 'guage'],
+                ipa: '[ˈlæŋɡwɪdʒ]'
+            },
+            'learning': {
+                syllables: ['learn', 'ing'],
+                ipa: '[ˈlɜːnɪŋ]'
+            },
+            'certainly': {
+                syllables: ['cer', 'tain', 'ly'],
+                ipa: '[ˈsɜːtənli]'
+            }
+        };
+
+        speedControl.oninput = function() {
+            speedValue.textContent = this.value + 'x';
+        }
+
+        function speak() {
+            const text = document.getElementById('inputText').value;
+            wordArray = text.match(/\S+/g) || [];
+            output.innerHTML = wordArray.map((word, index) => `<span id="word${index}" onclick="showPronunciation('${word}')">${word}</span>`).join(' ');
+
+            utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = parseFloat(speedControl.value);
+
+            currentIndex = 0;
+            utterance.onboundary = function(event) {
+                if (event.name === 'word') {
+                    highlightNext();
+                }
+            }
+
+            synth.cancel();
+            synth.speak(utterance);
+        }
+
+        function highlightNext() {
+            if (currentIndex > 0) {
+                document.getElementById(`word${currentIndex - 1}`).classList.remove('highlight');
+            }
+            if (currentIndex < wordArray.length) {
+                document.getElementById(`word${currentIndex}`).classList.add('highlight');
+                currentIndex++;
+            }
+        }
+
+        function showPronunciation(word) {
+            currentWord = word.toLowerCase();
+            document.getElementById('selectedWord').textContent = word;
+            
+            const info = wordInfo[currentWord] || { syllables: [currentWord], ipa: '[N/A]' };
+            currentSyllables = info.syllables;
+
+            // 顯示音節
+            const syllablesDiv = document.getElementById('syllables');
+            syllablesDiv.innerHTML = currentSyllables.map((syllable, index) => 
+                `<span class="syllable" onclick="speakSyllable(${index})">${syllable}</span>`
+            ).join('/');
+
+            // 顯示國際音標
+            document.getElementById('ipa').textContent = info.ipa;
+
+            pronunciationGuide.style.display = 'block';
+
+            // 播放單詞發音
+            speakWord(word);
+        }
+
+        function speakWord(word) {
+            synth.cancel();
+            let wordUtterance = new SpeechSynthesisUtterance(word);
+            wordUtterance.lang = 'en-US';
+            wordUtterance.rate = parseFloat(speedControl.value);
+            synth.speak(wordUtterance);
+        }
+
+        function speakSyllable(index) {
+            synth.cancel();
+            let syllableUtterance = new SpeechSynthesisUtterance(currentSyllables[index]);
+            syllableUtterance.lang = 'en-US';
+            syllableUtterance.rate = parseFloat(speedControl.value);
+            synth.speak(syllableUtterance);
+
+            // 高亮當前音節
+            document.querySelectorAll('.syllable').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.syllable')[index].classList.add('active');
+        }
+
+        function speakSyllables() {
+            synth.cancel();
+            currentSyllables.forEach((syllable, index) => {
+                let syllableUtterance = new SpeechSynthesisUtterance(syllable);
+                syllableUtterance.lang = 'en-US';
+                syllableUtterance.rate = parseFloat(speedControl.value);
+                syllableUtterance.onstart = function() {
+                    document.querySelectorAll('.syllable').forEach(el => el.classList.remove('active'));
+                    document.querySelectorAll('.syllable')[index].classList.add('active');
+                };
+                synth.speak(syllableUtterance);
+            });
+        }
+    </script>
+</body>
+</html>
