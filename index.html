@@ -1,231 +1,939 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>教研帶你學英文</title>
+    <title>HiTeach功能與應用總覽</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
+    font-family: 'Microsoft JhengHei', Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f8f5fd;
+    color: #333;
+}
+
+h1 {
+    color: #6a3093;
+    text-align: center;
+    margin-bottom: 30px;
+}        
+        .tree {
+            margin: 0 auto;
+            max-width: 1200px;
         }
-        #inputText {
-            width: 80%;
-            height: 100px;
-            margin-bottom: 10px;
-        }
-        #output {
-            width: 80%;
-            min-height: 50px;
-            border: 1px solid #ccc;
+        
+        .node {
+            margin: 5px 0;
             padding: 10px;
-            margin-top: 10px;
-            line-height: 1.5;
-        }
-        .highlight {
-            background-color: yellow;
-            box-shadow: 0 0 5px yellow;
-        }
-        #speedControl {
-            width: 80%;
-            margin: 10px 0;
-        }
-        #speedValue {
-            margin-left: 10px;
-        }
-        #pronunciationGuide {
-            width: 80%;
-            margin-top: 20px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            display: none;
-            text-align: center;
-        }
-        #mouthAnimation {
-            width: 200px;
-            height: 200px;
-            margin: 20px auto;
-        }
-        #instruction {
-            margin-top: 10px;
-            font-style: italic;
-            color: #666;
-        }
-        #syllables {
-            font-size: 24px;
-            margin: 20px 0;
-        }
-        .syllable {
-            cursor: pointer;
-            padding: 5px;
-            margin: 0 5px;
             border-radius: 5px;
+            transition: all 0.3s ease;
         }
-        .syllable:hover {
-            background-color: #f0f0f0;
+        
+        .level-1 {
+    background: linear-gradient(to right, #6a3093, #a044ff);
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    cursor: pointer;
+    margin-top: 15px;
+    border-left: 5px solid #4e236b;
+    transition: all 0.2s ease;
+    border-radius: 5px;
+}
+
+.level-2 {
+    background: linear-gradient(to right, #7b52ab, #b47fef);
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    margin-left: 30px;
+    cursor: pointer;
+    border-left: 4px solid #5c3b7e;
+    transition: all 0.2s ease;
+    border-radius: 4px;
+}
+
+.level-3 {
+    background: linear-gradient(to right, #9471c2, #c9a8f0);
+    color: white;
+    margin-left: 60px;
+    cursor: pointer;
+    border-left: 3px solid #735999;
+    transition: all 0.2s ease;
+    border-radius: 3px;
+}
+
+.level-4 {
+    background: linear-gradient(to right, #b8a1da, #e2d5f5);
+    color: #4e236b;
+    margin-left: 90px;
+    border-left: 2px solid #8d76b2;
+    border-radius: 3px;
+}   
+     
+        .collapsed > div {
+            display: none;
         }
-        .syllable.active {
-            background-color: #ffff00;
+        
+        .level-1::before,
+.level-2::before,
+.level-3::before {
+    content: "▼";
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: normal;
+    display: inline-block;
+    width: 20px;
+    transition: transform 0.3s ease;
+    font-size: 10px;
+    vertical-align: middle;
+}
+
+.level-1.collapsed::before,
+.level-2.collapsed::before,
+.level-3.collapsed::before {
+    content: "▶";
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 10px;
+}
+        
+        .search-box {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
         }
-        #ipa {
-            font-size: 18px;
-            margin: 10px 0;
-            font-style: italic;
+        
+       .search-box input {
+    padding: 8px 15px;
+    width: 300px;
+    border: 1px solid #b8a1da;
+    border-radius: 20px;
+    font-size: 16px;
+    box-shadow: 0 1px 3px rgba(106, 48, 147, 0.1);
+    transition: all 0.3s ease;
+}
+
+.search-box input:focus {
+    outline: none;
+    border-color: #9471c2;
+    box-shadow: 0 1px 5px rgba(106, 48, 147, 0.2);
+}
+        
+        .highlight {
+    background: linear-gradient(to right, #e2d5f5, #d7c1f0);
+    color: #4e236b;
+    font-weight: bold;
+    border-left-color: #9471c2 !important;
+    box-shadow: 0 0 8px rgba(148, 113, 194, 0.5);
+}
+        
+        .expand-all-btn, .collapse-all-btn {
+    padding: 8px 20px;
+    margin: 0 5px;
+    background: linear-gradient(to right, #6a3093, #a044ff);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(106, 48, 147, 0.3);
+    font-weight: 500;
+}
+
+.expand-all-btn:hover, .collapse-all-btn:hover {
+    background: linear-gradient(to right, #7b52ab, #b47fef);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 7px rgba(106, 48, 147, 0.5);
+}
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
         }
+.level-1:hover, .level-2:hover, .level-3:hover {
+    transform: translateX(3px);
+    box-shadow: 0 2px 8px rgba(106, 48, 147, 0.5);
+    opacity: 0.9;
+}
+
+.level-1::after, .level-2::after, .level-3::after {
+    content: "▶";
+    float: right;
+    opacity: 0.7;
+    color: #ffffff;
+    transition: all 0.2s ease;
+    font-size: 12px;
+    margin-top: 3px;
+}
+
+.level-1:hover::after, .level-2:hover::after, .level-3:hover::after {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.level-1.collapsed::after, .level-2.collapsed::after, .level-3.collapsed::after {
+    content: "▶";
+}
+
+.level-1:not(.collapsed)::after, .level-2:not(.collapsed)::after, .level-3:not(.collapsed)::after {
+    content: "▼";
+}
+/* 隱藏沒有子節點的元素的箭頭 */
+.node.no-children::before,
+.node.no-children::after {
+    display: none !important;
+}
+
+/* 為沒有子節點的元素添加不同的樣式，表明它不可展開 */
+.node.no-children {
+    cursor: default;
+}
+
+/* 為沒有子節點但被點擊的元素添加一個輕微的效果 */
+.node.no-children:active {
+    opacity: 0.8;
+}
     </style>
 </head>
 <body>
-    <h1>教研帶你學英文</h1>
-    <textarea id="inputText" placeholder="請輸入要朗讀的文字"></textarea>
-    <div>
-        <label for="speedControl">語速控制：</label>
-        <input type="range" id="speedControl" min="0.5" max="2" step="0.1" value="1">
-        <span id="speedValue">1x</span>
+    <h1>HiTeach功能與應用總覽</h1>
+    
+    <div class="controls">
+        <button class="expand-all-btn">展開全部</button>
+        <button class="collapse-all-btn">收合全部</button>
     </div>
-    <button onclick="speak()">開始朗讀</button>
-    <div id="output"></div>
-    <div id="instruction">點選單字即可聽發音、查看音節拆解及國際音標</div>
-    <div id="pronunciationGuide">
-        <h3>發音教學</h3>
-        <p>單詞：<span id="selectedWord"></span></p>
-        <div id="syllables"></div>
-        <div id="ipa"></div>
-        <button onclick="speakSyllables()">朗讀音節</button>
-        <div id="mouthAnimation"></div>
+    
+    <div class="search-box">
+        <input type="text" id="search-input" placeholder="搜尋功能...">
     </div>
-
+    
+    <div class="tree" id="hiteach-tree">
+        <!-- 基本工具 -->
+        <div class="node level-1 collapsed" data-level="1">
+            基本工具
+            <div>
+                <div class="node level-2 collapsed" data-level="2">
+                    教學工具區
+                    <div>
+                        <div class="node level-3" data-level="3">
+                            滑鼠/箭頭
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            各式筆型(特殊筆、螢光筆等)
+                        </div>
+                        <div class="node level-3 collapsed" data-level="3">
+                            橡皮擦
+                            <div>
+                                <div class="node level-4" data-level="4">擦拭、圈選清除</div>
+                            </div>
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            調色盤
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            幾何圖形工具
+                        </div>
+                    </div>
+                </div>
+                <div class="node level-2 collapsed" data-level="2">
+                    教具箱(白色星)
+                    <div>
+                        <div class="node level-3" data-level="3">
+                            數學工具(直尺、圓規等)
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            可愛符號
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            動態批註(像蚯蚓符號)
+                        </div>
+                    </div>
+                </div>
+                <div class="node level-2 collapsed" data-level="2">
+                    頁面操作
+                    <div>
+                        <div class="node level-3" data-level="3">
+                            上一頁/下一頁
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            新增頁面
+                        </div>
+                    </div>
+                </div>
+                <div class="node level-2 collapsed" data-level="2">
+                    頁面縮放
+                    <div>
+                        <div class="node level-3" data-level="3">
+                            放大/縮小
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            一比一原始比例
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 教材取用與匯入 -->
+        <div class="node level-1 collapsed" data-level="1">
+            教材取用與匯入
+            <div>
+                <div class="node level-2 collapsed" data-level="2">
+                    資料夾圖案
+                    <div>
+                        <div class="node level-3 collapsed" data-level="3">
+                            HiTeach 雲端內容
+                            <div>
+                                <div class="node level-4" data-level="4">HT檔案、Office系列(PPT、Word等)、圖片、影片</div>
+                            </div>
+                        </div>
+                        <div class="node level-3 collapsed" data-level="3">
+                            本機檔案
+                            <div>
+                                <div class="node level-4" data-level="4">選擇電腦檔案匯入</div>
+                                <div class="node level-4" data-level="4">匯入PPT (保留物件與動畫)</div>
+                                <div class="node level-4" data-level="4">匯入PDF</div>
+                            </div>
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            網路圖片搜尋
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            預設資源(素材、背景)
+                        </div>
+                    </div>
+                </div>
+                <div class="node level-2 collapsed" data-level="2">
+                    HiTA 教師APP 整合
+                    <div>
+                        <div class="node level-3" data-level="3">
+                            手機相機連線
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            拍攝實體教材/講義/課本
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            上傳拍攝的圖片
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            拍攝考卷並討論講解
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            OCR文字辨識(從照片提取文字)
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            作品觀摩(上傳學生作品)
+                        </div>
+                    </div>
+                </div>
+                <div class="node level-2 collapsed" data-level="2">
+                    外部教材整合
+                    <div>
+                        <div class="node level-3 collapsed" data-level="3">
+                            透明模式
+                            <div>
+                                <div class="node level-4" data-level="4">搭配PPT</div>
+                                <div class="node level-4" data-level="4">搭配電子書</div>
+                                <div class="node level-4" data-level="4">搭配PDF</div>
+                                <div class="node level-4" data-level="4">搭配其他網頁/網站</div>
+                            </div>
+                        </div>
+                        <div class="node level-3 collapsed" data-level="3">
+                            隨時批註(截圖當前畫面)
+                            <div>
+                                <div class="node level-4" data-level="4">將截圖畫面變為簡報頁面</div>
+                                <div class="node level-4" data-level="4">可在截圖頁使用HiTeach 功能</div>
+                                <div class="node level-4" data-level="4">自動保存截圖頁面</div>
+                            </div>
+                        </div>
+                        <div class="node level-3 collapsed" data-level="3">
+                            動態批註(邊播影片邊批註)
+                            <div>
+                                <div class="node level-4" data-level="4">工具列新增滑鼠按鈕</div>
+                                <div class="node level-4" data-level="4">同時操作電腦和批註</div>
+                            </div>
+                        </div>
+                        <div class="node level-3 collapsed" data-level="3">
+                            使用視訊鏡頭
+                            <div>
+                                <div class="node level-4" data-level="4">抓取電腦畫面</div>
+                                <div class="node level-4" data-level="4">顯示實體教材</div>
+                                <div class="node level-4" data-level="4">拍照抓取畫面到HiTeach</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 互動教學功能 -->
+        <div class="node level-1 collapsed" data-level="1">
+            互動教學功能
+            <div>
+                <div class="node level-2 collapsed" data-level="2">
+                    IRS 即時問答
+                    <div>
+                        <div class="node level-3" data-level="3">
+                            單選/複選/是非/填充/圖片題/文字問答
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            搶權
+                        </div>
+                        <div class="node level-3 collapsed" data-level="3">
+                            學生連線方式
+                            <div>
+                                <div class="node level-4" data-level="4">掃描QR Code</div>
+                                <div class="node level-4" data-level="4">輸入網址、教室編號、驗證碼</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="node level-2 collapsed" data-level="2">
+                    同步任務
+                    <div>
+                        <div class="node level-3 collapsed" data-level="3">
+                            推送功能
+                            <div>
+                                <div class="node level-4" data-level="4">推送頁面給學生</div>
+                                <div class="node level-4" data-level="4">推送檔案給學生</div>
+                            </div>
+                        </div>
+                        <div class="node level-3 collapsed" data-level="3">
+                            學生繳交任務 (九宮格)
+                            <div>
+                                <div class="node level-4" data-level="4">繳交圖片 (如：畫圖、拍照上傳)</div>
+                                <div class="node level-4" data-level="4">繳交聲音 (錄音回答)</div>
+                                <div class="node level-4" data-level="4">繳交檔案 (Word、PDF等)</div>
+                            </div>
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            觀摩/貼回學生作品 (討論、分享)
+                        </div>
+                    </div>
+                </div>
+                <div class="node level-2 collapsed" data-level="2">
+                    數據決策與分析
+                    <div>
+                        <div class="node level-3 collapsed" data-level="3">
+                            統計圖表(即時問答後)
+                            <div>
+                                <div class="node level-4" data-level="4">長條圖(統計結果)</div>
+                                <div class="node level-4" data-level="4">圓餅圖(答對率)</div>
+                                <div class="node level-4" data-level="4">AI分析(填充題關鍵詞)</div>
+                            </div>
+                        </div>
+                        <div class="node level-3 collapsed" data-level="3">
+                            智慧挑人
+                            <div>
+                                <div class="node level-4" data-level="4">從特定選項/答對答錯/關鍵字學生中挑人</div>
+                                <div class="node level-4" data-level="4">追問</div>
+                            </div>
+                        </div>
+                        <div class="node level-3 collapsed" data-level="3">
+                            加分(大拇指按鈕)
+                            <div>
+                                <div class="node level-4" data-level="4">為特定學生/群體加分</div>
+                                <div class="node level-4" data-level="4">個人與小組計分</div>
+                            </div>
+                        </div>
+                        <div class="node level-3 collapsed" data-level="3">
+                            差異化推送
+                            <div>
+                                <div class="node level-4" data-level="4">依據答題結果推送不同教材/頁面</div>
+                                <div class="node level-4" data-level="4">傳送檔案或文字給特定群體</div>
+                            </div>
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            查看點名表/計分區域
+                        </div>
+                        <div class="node level-3 collapsed" data-level="3">
+                            AI 文句分析
+                            <div>
+                                <div class="node level-4" data-level="4">應用於填充題</div>
+                                <div class="node level-4" data-level="4">應用於外部資料 (Google 表單、Word、PDF 等)</div>
+                                <div class="node level-4" data-level="4">單欄文字模式</div>
+                                <div class="node level-4" data-level="4">雙欄表格模式 (含座號)</div>
+                                <div class="node level-4" data-level="4">產生文字雲</div>
+                                <div class="node level-4" data-level="4">關鍵詞頻</div>
+                                <div class="node level-4" data-level="4">智慧分類(依共性分類)</div>
+                                <div class="node level-4" data-level="4">篩選/刪減字詞</div>
+                                <div class="node level-4" data-level="4">重新計算</div>
+                                <div class="node level-4" data-level="4">調整分類數量</div>
+                                <div class="node level-4" data-level="4">重新分類單一詞語</div>
+                                <div class="node level-4" data-level="4">貼回分析結果 (文字、Excel)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="node level-2 collapsed" data-level="2">
+                    智慧評分
+                    <div>
+                        <div class="node level-3 collapsed" data-level="3">
+                            學生互評(交換改)
+                            <div>
+                                <div class="node level-4" data-level="4">設定評分細節 (件數、最高分、匿名等)</div>
+                                <div class="node level-4" data-level="4">學生給予分數&評語</div>
+                                <div class="node level-4" data-level="4">學生可在作品上批改</div>
+                                <div class="node level-4" data-level="4">查看評分進度</div>
+                                <div class="node level-4" data-level="4">結果顯示分數&評語</div>
+                                <div class="node level-4" data-level="4">結果可加回記分板或原題</div>
+                            </div>
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            教師評分(如AI評分、手動評分)
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            圖文作品評分(AI)
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            口說練習評分(AI)
+                        </div>
+                    </div>
+                </div>
+                <div class="node level-2 collapsed" data-level="2">
+                    口說練習(AI自動評分)
+                    <div>
+                        <div class="node level-3" data-level="3">
+                            啟動口說練習
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            輸入/貼上練習句子
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            設定語言
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            點擊文字框快速啟動
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            學生端錄音
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            AI自動評分
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            學生選擇重錄或傳送
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            教師端查看AI分數 (翻牌)
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            播放學生聲音作品
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            發起多題口說自主練習
+                        </div>
+                    </div>
+                </div>
+                <div class="node level-2 collapsed" data-level="2">
+                    心智圖工具
+                    <div>
+                        <div class="node level-3" data-level="3">
+                            基本結構與編輯(新增、移動、複製)
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            進階設定(超連結、圖片)
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            複製為MKD格式 (跨頁面、跨軟體貼上)
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            協作功能(學生共編共創)
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            鎖定現有節點
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            重播編輯過程
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            檢視編輯記錄
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            貼回結果(截圖、文字)
+                        </div>
+                        <div class="node level-3 collapsed" data-level="3">
+                            搭配AI生成
+                            <div>
+                                <div class="node level-4" data-level="4">使用AI指令集範本</div>
+                                <div class="node level-4" data-level="4">從圖片/文字生成心智圖</div>
+                                <div class="node level-4" data-level="4">從閱讀文本生成摘要心智圖</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="node level-2 collapsed" data-level="2">
+                    測試功能
+                    <div>
+                        <div class="node level-3 collapsed" data-level="3">
+                            雲端快速組卷
+                            <div>
+                                <div class="node level-4" data-level="4">進入雲平台個人題庫</div>
+                                <div class="node level-4" data-level="4">上傳試卷檔案(PDF/圖片)</div>
+                                <div class="node level-4" data-level="4">點拖截圖(逐題框選)</div>
+                                <div class="node level-4" data-level="4">選擇題型(單選、填充、問答等)</div>
+                                <div class="node level-4" data-level="4">輸入答案、設定配分</div>
+                                <div class="node level-4" data-level="4">儲存試卷</div>
+                            </div>
+                        </div>
+                        <div class="node level-3 collapsed" data-level="3">
+                            取用雲端試卷進行測驗
+                            <div>
+                                <div class="node level-4" data-level="4">下載雲端試卷</div>
+                                <div class="node level-4" data-level="4">開始測驗模式</div>
+                                <div class="node level-4" data-level="4">學生端作答(平板/IRS反饋器)</div>
+                                <div class="node level-4" data-level="4">結束測驗</div>
+                                <div class="node level-4" data-level="4">自動批改(客觀題)</div>
+                                <div class="node level-4" data-level="4">交換改(主觀題)</div>
+                                <div class="node level-4" data-level="4">依答題結果評講(優先紅/黃題)</div>
+                                <div class="node level-4" data-level="4">雲端平台保存記錄</div>
+                            </div>
+                        </div>
+                        <div class="node level-3 collapsed" data-level="3">
+                            快速組卷(點拖截圖適用於IRS反饋器)
+                            <div>
+                                <div class="node level-4" data-level="4">上傳PDF或圖片檔</div>
+                                <div class="node level-4" data-level="4">逐題截圖(題幹、選項)</div>
+                                <div class="node level-4" data-level="4">設定答案與配分</div>
+                                <div class="node level-4" data-level="4">學生使用IRS反饋器作答</div>
+                                <div class="node level-4" data-level="4">自動批改</div>
+                                <div class="node level-4" data-level="4">依答題結果評講</div>
+                            </div>
+                        </div>
+                        <div class="node level-3 collapsed" data-level="3">
+                            AI 生成試題
+                            <div>
+                                <div class="node level-4" data-level="4">使用AI 指令集</div>
+                                <div class="node level-4" data-level="4">擷取來源文本</div>
+                                <div class="node level-4" data-level="4">生成試題內容</div>
+                                <div class="node level-4" data-level="4">發起挑戰賽</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 個人化與設定 -->
+        <div class="node level-1 collapsed" data-level="1">
+            個人化與設定
+            <div>
+                <div class="node level-2 collapsed" data-level="2">
+                    自訂工具列
+                    <div>
+                        <div class="node level-3" data-level="3">
+                            齒輪符號設定
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            預設長/短工具列
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            隱藏不常用工具
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            將常用工具移至第一層
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            設定與個人帳號綁定
+                        </div>
+                    </div>
+                </div>
+                <div class="node level-2 collapsed" data-level="2">
+                    背景模板選擇
+                    <div>
+                        <div class="node level-3" data-level="3">
+                            系統設定更改
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            白板/黑板模式
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            畫筆顏色自動對應
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            設定與個人帳號綁定
+                        </div>
+                    </div>
+                </div>
+                <div class="node level-2 collapsed" data-level="2">
+                    個人化記憶 (與帳號綁定)
+                    <div>
+                        <div class="node level-3" data-level="3">
+                            反饋選項 (1234/ABCD)
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            問答選項數量
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            預設進入學校
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            接續上節課的小組/個人計分
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 雲平台功能 -->
+        <div class="node level-1 collapsed" data-level="1">
+            雲平台功能
+            <div>
+                <div class="node level-2 collapsed" data-level="2">
+                    資料保存
+                    <div>
+                        <div class="node level-3" data-level="3">
+                            課堂紀錄自動上傳
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            點開大頭貼開啟雲平台
+                        </div>
+                    </div>
+                </div>
+                <div class="node level-2 collapsed" data-level="2">
+                    數據紀錄
+                    <div>
+                        <div class="node level-3" data-level="3">
+                            全班學習表現摘要
+                        </div>
+                        <div class="node level-3 collapsed" data-level="3">
+                            課堂記錄詳情
+                            <div>
+                                <div class="node level-4" data-level="4">互動問答紀錄</div>
+                                <div class="node level-4" data-level="4">用戶繳交紀錄</div>
+                                <div class="node level-4" data-level="4">數據分析紀錄</div>
+                                <div class="node level-4" data-level="4">電子筆記(完整保留)</div>
+                                <div class="node level-4" data-level="4">教材記錄(完整保留)</div>
+                            </div>
+                        </div>
+                        <div class="node level-3 collapsed" data-level="3">
+                            測驗數據
+                            <div>
+                                <div class="node level-4" data-level="4">各類型測驗數據</div>
+                                <div class="node level-4" data-level="4">圖表顯示</div>
+                                <div class="node level-4" data-level="4">檢視學生分數</div>
+                                <div class="node level-4" data-level="4">雲端批改/分數調整</div>
+                            </div>
+                        </div>
+                        <div class="node level-3 collapsed" data-level="3">
+                            成績統計區
+                            <div>
+                                <div class="node level-4" data-level="4">統計出缺席、成績、作業分數</div>
+                                <div class="node level-4" data-level="4">調整權重計算公式</div>
+                                <div class="node level-4" data-level="4">新增項目貼上其他分數</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="node level-2 collapsed" data-level="2">
+                    課前課後活動
+                    <div>
+                        <div class="node level-3 collapsed" data-level="3">
+                            發布課堂記錄給學生
+                            <div>
+                                <div class="node level-4" data-level="4">學生端查看互動歷程、筆記</div>
+                                <div class="node level-4" data-level="4">方便學生複習</div>
+                            </div>
+                        </div>
+                        <div class="node level-3 collapsed" data-level="3">
+                            學生自主複習
+                            <div>
+                                <div class="node level-4" data-level="4">查看成績單</div>
+                                <div class="node level-4" data-level="4">針對錯題/標記錯題重複練習</div>
+                            </div>
+                        </div>
+                        <div class="node level-3 collapsed" data-level="3">
+                            智慧錯題本
+                            <div>
+                                <div class="node level-4" data-level="4">自動保存錯題</div>
+                                <div class="node level-4" data-level="4">依遺忘曲線推送練習</div>
+                            </div>
+                        </div>
+                        <div class="node level-3 collapsed" data-level="3">
+                            發起作業
+                            <div>
+                                <div class="node level-4" data-level="4">學生即時回覆繳交</div>
+                                <div class="node level-4" data-level="4">老師檢視繳交狀況</div>
+                                <div class="node level-4" data-level="4">老師批改給分</div>
+                                <div class="node level-4" data-level="4">學生查看分數與評語</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="node level-2" data-level="2">
+                    可下載保存數據紀錄
+                </div>
+            </div>
+        </div>
+        
+        <!-- T綠燈與科技互動指數 -->
+        <div class="node level-1 collapsed" data-level="1">
+            T綠燈與科技互動指數
+            <div>
+                <div class="node level-2" data-level="2">
+                    定義 (科技互動指數達70分以上)
+                </div>
+                <div class="node level-2" data-level="2">
+                    前置作業 (取得AI小數據功能)
+                </div>
+                <div class="node level-2" data-level="2">
+                    查看 T指數 (HiTA APP 通知頁面)
+                </div>
+                <div class="node level-2" data-level="2">
+                    上課超過10分鐘才紀錄
+                </div>
+                <div class="node level-2 collapsed" data-level="2">
+                    累積好處
+                    <div>
+                        <div class="node level-3" data-level="3">
+                            兌換HiTeach 權益/禮物
+                        </div>
+                        <div class="node level-3" data-level="3">
+                            熟練使用科技工具指標
+                        </div>
+                    </div>
+                </div>
+                <div class="node level-2" data-level="2">
+                    取得方法(四個互動功能，十個步驟)
+                </div>
+                <div class="node level-2" data-level="2">
+                    查看AI Grady 小數據服務通知
+                </div>
+            </div>
+        </div>
+        
+        <!-- 其他資訊 -->
+        <div class="node level-1 collapsed" data-level="1">
+            其他資訊
+            <div>
+                <div class="node level-2" data-level="2">
+                    AI 文字雲 (外部資料應用)
+                </div>
+                <div class="node level-2" data-level="2">
+                    AI 文句分析 (外部資料應用)
+                </div>
+                <div class="node level-2" data-level="2">
+                    雲端快速組卷 (IRS 反饋器適用)
+                </div>
+                <div class="node level-2" data-level="2">
+                    HiTA 教師APP (助手功、數據彙整、拍照上傳)
+                </div>
+                <div class="node level-2" data-level="2">
+                    Moodle 雲平台 (整合)
+                </div>
+                <div class="node level-2" data-level="2">
+                    AI 輔助教師科技增能計畫
+                </div>
+                <div class="node level-2" data-level="2">
+                    HiTeach 助教APP
+                </div>
+                <div class="node level-2" data-level="2">
+                    兌換優惠券或取授權
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <script>
-        let synth = window.speechSynthesis;
-        let utterance;
-        let wordArray;
-        let currentIndex = 0;
-        let speedControl = document.getElementById('speedControl');
-        let speedValue = document.getElementById('speedValue');
-        let output = document.getElementById('output');
-        let pronunciationGuide = document.getElementById('pronunciationGuide');
-        let currentWord = '';
-        let currentSyllables = [];
-
-        // 更新的單詞信息，包含詳細音節拆解和國際音標
-        const wordInfo = {
-            'hello': {
-                syllables: ['hel', 'lo'],
-                ipa: '[həˈləʊ]'
-            },
-            'world': {
-                syllables: ['world'],
-                ipa: '[wɜːld]'
-            },
-            'computer': {
-                syllables: ['com', 'pu', 'ter'],
-                ipa: '[kəmˈpjuːtə(r)]'
-            },
-            'language': {
-                syllables: ['lan', 'guage'],
-                ipa: '[ˈlæŋɡwɪdʒ]'
-            },
-            'learning': {
-                syllables: ['learn', 'ing'],
-                ipa: '[ˈlɜːnɪŋ]'
-            },
-            'certainly': {
-                syllables: ['cer', 'tain', 'ly'],
-                ipa: '[ˈsɜːtənli]'
-            }
-        };
-
-        speedControl.oninput = function() {
-            speedValue.textContent = this.value + 'x';
-        }
-
-        function speak() {
-            const text = document.getElementById('inputText').value;
-            wordArray = text.match(/\S+/g) || [];
-            output.innerHTML = wordArray.map((word, index) => `<span id="word${index}" onclick="showPronunciation('${word}')">${word}</span>`).join(' ');
-
-            utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'en-US';
-            utterance.rate = parseFloat(speedControl.value);
-
-            currentIndex = 0;
-            utterance.onboundary = function(event) {
-                if (event.name === 'word') {
-                    highlightNext();
+        document.addEventListener('DOMContentLoaded', function() {
+			// 判斷節點是否有子節點，沒有子節點的隱藏箭頭
+function updateArrowVisibility() {
+            const nodes = document.querySelectorAll('.level-1, .level-2, .level-3');
+            nodes.forEach(node => {
+                // 檢查該節點內是否有div元素（子節點）
+                const hasChildren = node.querySelector('div > .node') !== null;
+                
+                // 如果沒有子節點，添加一個特殊的類來隱藏箭頭
+                if (!hasChildren) {
+                    node.classList.add('no-children');
+                } else {
+                    node.classList.remove('no-children');
                 }
-            }
-
-            synth.cancel();
-            synth.speak(utterance);
-        }
-
-        function highlightNext() {
-            if (currentIndex > 0) {
-                document.getElementById(`word${currentIndex - 1}`).classList.remove('highlight');
-            }
-            if (currentIndex < wordArray.length) {
-                document.getElementById(`word${currentIndex}`).classList.add('highlight');
-                currentIndex++;
-            }
-        }
-
-        function showPronunciation(word) {
-            currentWord = word.toLowerCase();
-            document.getElementById('selectedWord').textContent = word;
-            
-            const info = wordInfo[currentWord] || { syllables: [currentWord], ipa: '[N/A]' };
-            currentSyllables = info.syllables;
-
-            // 顯示音節
-            const syllablesDiv = document.getElementById('syllables');
-            syllablesDiv.innerHTML = currentSyllables.map((syllable, index) => 
-                `<span class="syllable" onclick="speakSyllable(${index})">${syllable}</span>`
-            ).join('/');
-
-            // 顯示國際音標
-            document.getElementById('ipa').textContent = info.ipa;
-
-            pronunciationGuide.style.display = 'block';
-
-            // 播放單詞發音
-            speakWord(word);
-        }
-
-        function speakWord(word) {
-            synth.cancel();
-            let wordUtterance = new SpeechSynthesisUtterance(word);
-            wordUtterance.lang = 'en-US';
-            wordUtterance.rate = parseFloat(speedControl.value);
-            synth.speak(wordUtterance);
-        }
-
-        function speakSyllable(index) {
-            synth.cancel();
-            let syllableUtterance = new SpeechSynthesisUtterance(currentSyllables[index]);
-            syllableUtterance.lang = 'en-US';
-            syllableUtterance.rate = parseFloat(speedControl.value);
-            synth.speak(syllableUtterance);
-
-            // 高亮當前音節
-            document.querySelectorAll('.syllable').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.syllable')[index].classList.add('active');
-        }
-
-        function speakSyllables() {
-            synth.cancel();
-            currentSyllables.forEach((syllable, index) => {
-                let syllableUtterance = new SpeechSynthesisUtterance(syllable);
-                syllableUtterance.lang = 'en-US';
-                syllableUtterance.rate = parseFloat(speedControl.value);
-                syllableUtterance.onstart = function() {
-                    document.querySelectorAll('.syllable').forEach(el => el.classList.remove('active'));
-                    document.querySelectorAll('.syllable')[index].classList.add('active');
-                };
-                synth.speak(syllableUtterance);
             });
         }
+
+        // 初始化時執行一次
+        updateArrowVisibility();
+
+        // 原有的代碼，為每個可點擊節點添加事件監聽器
+        const clickableNodes = document.querySelectorAll('.level-1, .level-2, .level-3');
+        clickableNodes.forEach(node => {
+            node.addEventListener('click', function(e) {
+                // 阻止事件冒泡
+                e.stopPropagation();
+                
+                // 檢查是否有子節點
+                const hasChildren = this.querySelector('div > .node') !== null;
+                
+                // 只有有子節點的元素才切換折疊狀態
+                if (hasChildren) {
+                    this.classList.toggle('collapsed');
+                }
+            });
+        });            
+            // 搜尋功能
+            const searchInput = document.getElementById('search-input');
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                
+                // 移除所有高亮
+                document.querySelectorAll('.highlight').forEach(el => {
+                    el.classList.remove('highlight');
+                });
+                
+                if (searchTerm.length < 2) {
+                    return; // 至少輸入2個字符才進行搜尋
+                }
+                
+                // 搜尋節點
+                const allNodes = document.querySelectorAll('.node');
+                let anyMatch = false;
+                
+                allNodes.forEach(node => {
+                    const nodeText = node.childNodes[0].textContent.toLowerCase();
+                    
+                    if (nodeText.includes(searchTerm)) {
+                        // 高亮匹配的節點
+                        node.classList.add('highlight');
+                        
+                        // 展開包含該節點的所有父節點
+                        let parent = node.parentNode;
+                        while (parent && parent.classList && parent.classList.contains('collapsed')) {
+                            const parentNode = parent.parentNode;
+                            if (parentNode && parentNode.classList && parentNode.classList.contains('node')) {
+                                parentNode.classList.remove('collapsed');
+                            }
+                            parent = parentNode;
+                        }
+                        
+                        anyMatch = true;
+                    }
+                });
+                
+                // 如果有匹配項，則滾動到第一個匹配項
+                if (anyMatch) {
+                    const firstMatch = document.querySelector('.highlight');
+                    if (firstMatch) {
+                        firstMatch.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
+            });
+            
+            // 展開全部按鈕
+            document.querySelector('.expand-all-btn').addEventListener('click', function() {
+                document.querySelectorAll('.collapsed').forEach(node => {
+                    node.classList.remove('collapsed');
+                });
+            });
+            
+            // 收合全部按鈕
+            document.querySelector('.collapse-all-btn').addEventListener('click', function() {
+                document.querySelectorAll('.level-1, .level-2, .level-3').forEach(node => {
+                    node.classList.add('collapsed');
+                });
+            });
+        });
     </script>
 </body>
 </html>
